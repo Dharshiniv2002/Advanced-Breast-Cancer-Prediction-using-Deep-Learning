@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Breast Cancer Prediction using Deep Learning</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <div class="navbar">
+        <h1>Breast Cancer Prediction</h1>
+    </div>
+
+    <!-- About Us page content -->
+    <div class="home">
+        <div class="content">
+            <div class="right">
+                <img src="{{ url_for('static', filename='images/Image2.png') }}" alt="Company Image">
+            </div>
+            <div class="middle">
+            </div>
+            <div class="left">
+                <div class="align">
+                    <h1 style="color: black;">Choose an Image file for Prediction</h1>
+                    <button class="choose-image" onclick="document.getElementById('fileInput').click()">Choose file</button>
+                    <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+                    <div id="preview"></div>
+                    <button class="choose-image" onclick="predict()">Predict</button>
+                    <div id="result">
+                    </div> <!-- Added div to display the prediction result -->
+                </div>
+            </div>
+            <div class="last">
+            </div>
+            <div class="bg-color"></div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('preview');
+                output.innerHTML = '<img src="' + reader.result + '">';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function predict() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/pred', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(text) {
+                // Display the prediction result
+                var resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<h2>' + text + '</h2>';
+            })
+            .catch(function(error) {
+                console.log('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
